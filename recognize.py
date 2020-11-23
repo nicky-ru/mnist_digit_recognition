@@ -1,23 +1,18 @@
 import pickle
-from two_layer_net import TwoLayerNet
-from dataset.mnist import load_mnist
+from common.nets import FourLayerNet
+from img_preprocessing import get_img
 import numpy as np
 
-(x_train, t_train), (x_test, t_test) = load_mnist(normalize=True, flatten=True, one_hot_label=True)
+img = get_img('dataset/WechatIMG205.jpeg')
 
-network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
+network = FourLayerNet(input_size=784, first=100, second=100, third=50, output_size=10)
 
 with open('resources/leaned_weights.pkl', 'rb') as f:
-    network.params = pickle.load(f)
+    network_to_unpickle = pickle.load(f)
+    network.params = network_to_unpickle.get('params')
+    network.layers = network_to_unpickle.get('layers')
+    network.last_layer = network_to_unpickle.get('last_layer')
 
-
-for idx in range(1000, 1010):
-    img = x_train[idx]
-    pred = network.predict(img)
-    pred = np.argmax(pred)
-    print(pred)
-
-    label = t_train[idx]
-    label = np.argmax(label)
-    print(label)
-    print()
+res = network.predict(img)
+res = np.argmax(res)
+print(res)
